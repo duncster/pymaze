@@ -16,9 +16,8 @@ num_rows = 40
 num_cols = 40
 
 thick = 0
-
-window = None
-background = None
+run = True
+count = 0
 
 def init():
 		pygame.init()
@@ -35,13 +34,13 @@ def init():
 
 		return window, background
 	
-def run(window, background, M):
+def render(window, background, M, solution):
 	background.fill((255, 255, 255))
 
 	#pygame.gfxdraw.line(self.background, 0, 0, scrw, scrh, (0, 0, 0))
 
 	xsiz = scrw / num_cols
-	ysiz = scrw / num_rows
+	ysiz = scrh / num_rows
 		
 	for y in range(0, num_rows):
 		for x in range(0, num_cols):
@@ -69,6 +68,15 @@ def run(window, background, M):
 
 
 			#pygame.gfxdraw.circle(self.background, xpos, ypos, 10, (0, 255, 0))	
+
+	last = (xsiz/2, ysiz/2)
+	for node in solution:
+		print(node)
+		xpos = (node[0] * xsiz) - (xsiz/2)
+		ypos = (node[1] * ysiz) - (ysiz/2)
+		pygame.gfxdraw.line(background, last[0], last[1], xpos, ypos, (255, 0, 0))
+	
+		last = (xpos, ypos)
 
 	window.blit(background, (0, 0))
 	pygame.display.flip()
@@ -123,17 +131,74 @@ def gen_maze():
     
          
 	# Open the walls at the start and finish
-	M[0,0,0] = 1
-	M[num_rows-1,num_cols-1,2] = 1
+	#M[0,0,0] = 1
+	#M[num_rows-1,num_cols-1,2] = 1
+
+	# reset the visited flag
+	for y in range(0, num_rows):
+		for x in range(0, num_cols):
+			M[x, y, 4] = 0;
 
 	return M
 
+def solve(maze, solution):
+	global run	
+	global count 
+	count += 1
+		
+	if count > 1000:
+		time.sleep(5) 
+		run = 0	
+
+	if len(solution) == 0:
+		solution.append((0,0))
+	else:
+		found = False
+		node = solution[len(solution)-1]
+	
+		if (maze[node[0], node[1], 0] == 0) and (node[0] > 0) and not found:
+			# left
+			if maze[node[0]-1, node[1], 4] == 0:
+				solution.append((node[0]-1, node[1]))
+				maze[node[0]-1, node[1], 4] = 1;
+				found = True
+
+		if (maze[node[0], node[1], 1] == 0) and (node[1] > 0) and not found:
+			# up
+			if maze[node[0], node[1]-1, 4] == 0:
+				solution.append((node[0], node[1]-1))
+				maze[node[0], node[1]-1, 4] = 1;
+				found = True
+
+		if (maze[node[0], node[1], 2] == 0) and (node[0] * (scrw/num_cols) < scrw) and not found:
+			# right
+			if maze[node[0]+1, node[1], 4] == 0:
+				solution.append((node[0]+1, node[1]))
+				maze[node[0]+1, node[1], 4] = 1
+				found = True
+
+		if (maze[node[0], node[1], 3] == 0) and (node[1] * (scrh/num_rows) < scrh) and not found:
+			# down
+			if maze[node[0], node[1]+1, 4] == 0:
+				solution.append((node[0], node[1]+1))
+				maze[node[0], node[1]+1, 4] = 1
+				found = True
+
+		if not found:
+			solution.pop()
+
+	return maze, solution
+
 def main():
+	solution = []
 	window, background = init()
-	for n in range(0, 50):
-		maze = gen_maze()
-		run(window, background, maze)
-		time.sleep(1)
+	maze = gen_maze()
+
+	while run:
+		maze, solution = solve(maze, solution)
+		render(window, background, maze, solution)
+		print("tick")
+		#time.sleep(1)
 
 if __name__ == "__main__":
 	main()
