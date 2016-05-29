@@ -16,9 +16,9 @@ scrh = 600
 num_rows = 40
 num_cols = 40
 
-thick = 0
+thick = 2
 run = True
-count = 0
+#count = 0
 
 def init():
 		pygame.init()
@@ -144,8 +144,8 @@ def gen_maze():
 
 def solve(maze, solution):
 	global run	
-	global count 
-	count += 1
+	#global count 
+	#count += 1
 		
 	#if count > 1000:
 	#	time.sleep(5) 
@@ -170,6 +170,14 @@ def solve(maze, solution):
 		#print("--")
 		#time.sleep(2)
 		#sys.exit(0)
+		
+		if (maze[node[0], node[1], 0] == 1) and (node[1] > 0) and not found:
+			# up - 0
+			if maze[node[0], node[1]-1, 4] == 0:
+				solution.append((node[0], node[1]-1))
+				maze[node[0], node[1]-1, 4] = 1;
+				found = True
+				#print("up")
 
 		if (maze[node[0], node[1], 1] == 1) and (node[0] > 0) and not found:
 			# left - 1
@@ -179,13 +187,13 @@ def solve(maze, solution):
 				found = True
 				#print("left")
 
-		if (maze[node[0], node[1], 0] == 1) and (node[1] > 0) and not found:
-			# up - 0
-			if maze[node[0], node[1]-1, 4] == 0:
-				solution.append((node[0], node[1]-1))
-				maze[node[0], node[1]-1, 4] = 1;
+		if (maze[node[0], node[1], 2] == 1) and (node[1] * (scrh/num_rows) < scrh) and not found:
+			# down - 2
+			if maze[node[0], node[1]+1, 4] == 0:
+				solution.append((node[0], node[1]+1))
+				maze[node[0], node[1]+1, 4] = 1
 				found = True
-				#print("up")
+				#print("down")
 
 		if (maze[node[0], node[1], 3] == 1) and (node[0] * (scrw/num_cols) < scrw) and not found:
 			# right - 3
@@ -195,14 +203,6 @@ def solve(maze, solution):
 				found = True
 				#print("right")
 
-		if (maze[node[0], node[1], 2] == 1) and (node[1] * (scrh/num_rows) < scrh) and not found:
-			# down - 2
-			if maze[node[0], node[1]+1, 4] == 0:
-				solution.append((node[0], node[1]+1))
-				maze[node[0], node[1]+1, 4] = 1
-				found = True
-				#print("down")
-
 		if not found:
 			solution.pop()
 			#print("back")
@@ -210,8 +210,9 @@ def solve(maze, solution):
 
 	current = solution[len(solution)-1]
 	if current[0] == num_cols-1 and current[1] == num_rows-1:
+		print("done")
 		run = 0
-		time.sleep(5)
+		time.sleep(20)
 
 	return maze, solution
 
