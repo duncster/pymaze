@@ -8,6 +8,7 @@ import random
 import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.cm as cm
+import sys
 
 scrw = 800
 scrh = 600
@@ -71,9 +72,9 @@ def render(window, background, M, solution):
 
 	last = (xsiz/2, ysiz/2)
 	for node in solution:
-		print(node)
-		xpos = (node[0] * xsiz) - (xsiz/2)
-		ypos = (node[1] * ysiz) - (ysiz/2)
+		#print(node)
+		xpos = ((node[0] + 1) * xsiz) - (xsiz/2)
+		ypos = ((node[1] + 1) * ysiz) - (ysiz/2)
 		pygame.gfxdraw.line(background, last[0], last[1], xpos, ypos, (255, 0, 0))
 	
 		last = (xpos, ypos)
@@ -146,46 +147,71 @@ def solve(maze, solution):
 	global count 
 	count += 1
 		
-	if count > 1000:
-		time.sleep(5) 
-		run = 0	
+	#if count > 1000:
+	#	time.sleep(5) 
+	#	run = 0	
 
 	if len(solution) == 0:
 		solution.append((0,0))
 	else:
 		found = False
 		node = solution[len(solution)-1]
-	
-		if (maze[node[0], node[1], 0] == 0) and (node[0] > 0) and not found:
-			# left
+
+		#print("--")
+		#print("possible moves:")
+		#if maze[node[0], node[1], 0] == 1:
+		#	print("up")
+		#if maze[node[0], node[1], 1] == 1:
+		#	print("left")
+		#if maze[node[0], node[1], 2] == 1:
+		#	print("down")
+		#if maze[node[0], node[1], 3] == 1:
+		#	print("right")
+		#print("--")
+		#time.sleep(2)
+		#sys.exit(0)
+
+		if (maze[node[0], node[1], 1] == 1) and (node[0] > 0) and not found:
+			# left - 1
 			if maze[node[0]-1, node[1], 4] == 0:
 				solution.append((node[0]-1, node[1]))
 				maze[node[0]-1, node[1], 4] = 1;
 				found = True
+				#print("left")
 
-		if (maze[node[0], node[1], 1] == 0) and (node[1] > 0) and not found:
-			# up
+		if (maze[node[0], node[1], 0] == 1) and (node[1] > 0) and not found:
+			# up - 0
 			if maze[node[0], node[1]-1, 4] == 0:
 				solution.append((node[0], node[1]-1))
 				maze[node[0], node[1]-1, 4] = 1;
 				found = True
+				#print("up")
 
-		if (maze[node[0], node[1], 2] == 0) and (node[0] * (scrw/num_cols) < scrw) and not found:
-			# right
+		if (maze[node[0], node[1], 3] == 1) and (node[0] * (scrw/num_cols) < scrw) and not found:
+			# right - 3
 			if maze[node[0]+1, node[1], 4] == 0:
 				solution.append((node[0]+1, node[1]))
 				maze[node[0]+1, node[1], 4] = 1
 				found = True
+				#print("right")
 
-		if (maze[node[0], node[1], 3] == 0) and (node[1] * (scrh/num_rows) < scrh) and not found:
-			# down
+		if (maze[node[0], node[1], 2] == 1) and (node[1] * (scrh/num_rows) < scrh) and not found:
+			# down - 2
 			if maze[node[0], node[1]+1, 4] == 0:
 				solution.append((node[0], node[1]+1))
 				maze[node[0], node[1]+1, 4] = 1
 				found = True
+				#print("down")
 
 		if not found:
 			solution.pop()
+			#print("back")
+	
+
+	current = solution[len(solution)-1]
+	if current[0] == num_cols-1 and current[1] == num_rows-1:
+		run = 0
+		time.sleep(5)
 
 	return maze, solution
 
@@ -197,7 +223,7 @@ def main():
 	while run:
 		maze, solution = solve(maze, solution)
 		render(window, background, maze, solution)
-		print("tick")
+		#print("tick")
 		#time.sleep(1)
 
 if __name__ == "__main__":
