@@ -12,78 +12,79 @@ import matplotlib.cm as cm
 scrw = 800
 scrh = 600
 
-num_rows = 20
-num_cols = 20
+num_rows = 40
+num_cols = 40
 
-M = np.zeros((num_rows,num_cols,5), dtype=np.uint8)
+thick = 0
 
-class View:
-	def __init__(self):
+window = None
+background = None
+
+def init():
 		pygame.init()
-		#self.window = pygame.display.set_mode((640, 480), pygame.FULLSCREEN|pygame.DOUBLEBUF|pygame.HWSURFACE)
-		self.window = pygame.display.set_mode((scrw, scrh), pygame.DOUBLEBUF)
+		#window = pygame.display.set_mode((640, 480), pygame.FULLSCREEN|pygame.DOUBLEBUF|pygame.HWSURFACE)
+		window = pygame.display.set_mode((scrw, scrh), pygame.DOUBLEBUF)
 		pygame.display.set_caption('Maze')
-		self.background = pygame.Surface(self.window.get_size())
-		self.background.fill((0, 255, 0))
+		background = pygame.Surface(window.get_size())
+		background.fill((0, 255, 0))
 	
 		#print(pygame.display.Info())
 
-		self.window.blit(self.background, (0, 0))
+		window.blit(background, (0, 0))
 		pygame.display.flip()
+
+		return window, background
 	
-	def run(self):
-		self.background.fill((255, 255, 255))
+def run(window, background, M):
+	background.fill((255, 255, 255))
 
-		#pygame.gfxdraw.line(self.background, 0, 0, scrw, scrh, (0, 0, 0))
+	#pygame.gfxdraw.line(self.background, 0, 0, scrw, scrh, (0, 0, 0))
 
-		xsiz = scrw / num_cols
-		ysiz = scrw / num_rows
+	xsiz = scrw / num_cols
+	ysiz = scrw / num_rows
 		
-		for y in range(0, num_rows):
-			for x in range(0, num_cols):
-				xpos = x * xsiz
-				ypos = y * ysiz
+	for y in range(0, num_rows):
+		for x in range(0, num_cols):
+			xpos = x * xsiz
+			ypos = y * ysiz
 				
-				pygame.gfxdraw.line(self.background, xpos, ypos, xpos+xsiz, ypos+ysiz, (255, 0, 0))
-				pygame.gfxdraw.line(self.background, xpos+xsiz, ypos, xpos, ypos+ysiz, (255, 0, 0))
+			#pygame.gfxdraw.line(self.background, xpos, ypos, xpos+xsiz, ypos+ysiz, (255, 0, 0))
+			#pygame.gfxdraw.line(self.background, xpos+xsiz, ypos, xpos, ypos+ysiz, (255, 0, 0))
 			
-				# L	
-				if M[x, y, 0] == 0:
-					pygame.gfxdraw.line(self.background, xpos, ypos, xpos+xsiz, ypos, (0, 0, 0))
+			# U	
+			if M[x, y, 0] == 0:
+				pygame.gfxdraw.line(background, xpos+thick, ypos+thick, xpos+xsiz-thick, ypos+thick, (0, 0, 0))
 			
-				# U
-				if M[x, y, 1] == 0:	
-					pygame.gfxdraw.line(self.background, xpos, ypos, xpos, ypos+ysiz, (0, 0, 0))
+			# L
+			if M[x, y, 1] == 0:	
+				pygame.gfxdraw.line(background, xpos+thick, ypos+thick, xpos+thick, ypos+ysiz-thick, (0, 0, 0))
 			
-				# R
-				if M[x, y, 2] == 0:	
-					pygame.gfxdraw.line(self.background, xpos, ypos+ysiz, xpos+xsiz, ypos+ysiz, (0, 0, 0))
-			
-				# D
-				if M[x, y, 3] == 0:	
-					pygame.gfxdraw.line(self.background, xpos+xsiz, ypos, xpos+xsiz, ypos+ysiz, (0, 0, 0))
+			# D
+			if M[x, y, 2] == 0:	
+				pygame.gfxdraw.line(background, xpos+thick, ypos+ysiz-thick, xpos+xsiz-thick, ypos+ysiz-thick, (0, 0, 0))
+				
+			# R
+			if M[x, y, 3] == 0:	
+				pygame.gfxdraw.line(background, xpos+xsiz-thick, ypos+thick, xpos+xsiz-thick, ypos+ysiz-thick, (0, 0, 0))
 
-				pygame.gfxdraw.circle(self.background, xpos, ypos, 10, (0, 255, 0))	
 
-		self.window.blit(self.background, (0, 0))
-		pygame.display.flip()
+			#pygame.gfxdraw.circle(self.background, xpos, ypos, 10, (0, 255, 0))	
 
-def clear_maze():
-	for x in range(0, num_cols):
-		for y in range(0, num_rows):
-			for n in range(0, 4):
-				M[x, y, n] = 0
+	window.blit(background, (0, 0))
+	pygame.display.flip()
 
 def gen_maze():
+	M = np.zeros((num_rows,num_cols,5), dtype=np.uint8)
 	# Set starting row and column
 	r = 0
 	c = 0
+	history = None 
 	history = [(r,c)] # The history is the 
 
 	# Trace a path though the cells of the maze and open walls along the path.
 	# We do this with a while loop, repeating the loop until there is no history, 
 	# which would mean we backtracked to the initial start.
-	while history: 
+	while history:
 		M[r,c,4] = 1 # designate this location as visited
 		# check if the adjacent cells are valid for moving to
 		check = []
@@ -125,11 +126,13 @@ def gen_maze():
 	M[0,0,0] = 1
 	M[num_rows-1,num_cols-1,2] = 1
 
+	return M
+
 def main():
-	gen_maze()
-	view = View()
-	for n in range(0, 10):
-		view.run()
+	window, background = init()
+	for n in range(0, 50):
+		maze = gen_maze()
+		run(window, background, maze)
 		time.sleep(1)
 
 if __name__ == "__main__":
