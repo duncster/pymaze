@@ -9,8 +9,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 import matplotlib.cm as cm
 
-scrw = 640
-scrh = 480
+scrw = 800
+scrh = 600
 
 num_rows = 20
 num_cols = 20
@@ -46,18 +46,35 @@ class View:
 				
 				pygame.gfxdraw.line(self.background, xpos, ypos, xpos+xsiz, ypos+ysiz, (255, 0, 0))
 				pygame.gfxdraw.line(self.background, xpos+xsiz, ypos, xpos, ypos+ysiz, (255, 0, 0))
-				
-				pygame.gfxdraw.line(self.background, xpos, ypos, xpos+xsiz, ypos, (0, 0, 0))
-				pygame.gfxdraw.line(self.background, xpos, ypos, xpos, ypos+ysiz, (0, 0, 0))
-				pygame.gfxdraw.line(self.background, xpos, ypos+ysiz, xpos+xsiz, ypos+ysiz, (0, 0, 0))
-				pygame.gfxdraw.line(self.background, xpos+xsiz, ypos, xpos+xsiz, ypos+ysiz, (0, 0, 0))
+			
+				# L	
+				if M[x, y, 0] == 0:
+					pygame.gfxdraw.line(self.background, xpos, ypos, xpos+xsiz, ypos, (0, 0, 0))
+			
+				# U
+				if M[x, y, 1] == 0:	
+					pygame.gfxdraw.line(self.background, xpos, ypos, xpos, ypos+ysiz, (0, 0, 0))
+			
+				# R
+				if M[x, y, 2] == 0:	
+					pygame.gfxdraw.line(self.background, xpos, ypos+ysiz, xpos+xsiz, ypos+ysiz, (0, 0, 0))
+			
+				# D
+				if M[x, y, 3] == 0:	
+					pygame.gfxdraw.line(self.background, xpos+xsiz, ypos, xpos+xsiz, ypos+ysiz, (0, 0, 0))
 
 				pygame.gfxdraw.circle(self.background, xpos, ypos, 10, (0, 255, 0))	
 
 		self.window.blit(self.background, (0, 0))
 		pygame.display.flip()
 
-def maze():
+def clear_maze():
+	for x in range(0, num_cols):
+		for y in range(0, num_rows):
+			for n in range(0, 4):
+				M[x, y, n] = 0
+
+def gen_maze():
 	# Set starting row and column
 	r = 0
 	c = 0
@@ -109,11 +126,11 @@ def maze():
 	M[num_rows-1,num_cols-1,2] = 1
 
 def main():
-	print "yo!"
-	maze()
+	gen_maze()
 	view = View()
-	for n in range(0, 100):
+	for n in range(0, 10):
 		view.run()
+		time.sleep(1)
 
 if __name__ == "__main__":
 	main()
