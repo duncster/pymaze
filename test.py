@@ -11,12 +11,14 @@ import sys
 scrw = 800
 scrh = 600
 
-num_rows = 100
-num_cols = 100
+num_rows = 200
+num_cols = 200
 
 thick = 0
 run = True
 max = 0
+
+show_visits = False
 
 def init():
 		pygame.init()
@@ -62,8 +64,9 @@ def render(window, background, M, solution):
 				pygame.gfxdraw.line(background, xpos+xsiz-thick, ypos+thick, \
 					xpos+xsiz-thick, ypos+ysiz-thick, (0, 0, 0))
 
-			if M[x, y, 4] == 1:
-				pygame.gfxdraw.circle(background, xpos + (xsiz/2), ypos + (ysiz/2), 1, (0, 255, 0))	
+			if show_visits:
+				if M[x, y, 4] == 1:
+					pygame.gfxdraw.circle(background, xpos + (xsiz/2), ypos + (ysiz/2), 1, (0, 255, 0))	
 
 	last = (xsiz/2, ysiz/2)
 	for node in solution:
