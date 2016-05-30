@@ -6,24 +6,25 @@ from pygame.locals import *
 import time
 import random
 import numpy as np
-from matplotlib import pyplot as plt
-import matplotlib.cm as cm
+#from matplotlib import pyplot as plt
+#import matplotlib.cm as cm
 import sys
 
 scrw = 800
 scrh = 600
 
-num_rows = 40
-num_cols = 40
+num_rows = 100
+num_cols = 100
 
-thick = 2
+thick = 0
 run = True
 #count = 0
+max = 0
 
 def init():
 		pygame.init()
-		#window = pygame.display.set_mode((640, 480), pygame.FULLSCREEN|pygame.DOUBLEBUF|pygame.HWSURFACE)
-		window = pygame.display.set_mode((scrw, scrh), pygame.DOUBLEBUF)
+		window = pygame.display.set_mode((scrw, scrh), pygame.FULLSCREEN|pygame.DOUBLEBUF|pygame.HWSURFACE)
+		#window = pygame.display.set_mode((scrw, scrh), pygame.DOUBLEBUF)
 		pygame.display.set_caption('Maze')
 		background = pygame.Surface(window.get_size())
 		background.fill((0, 255, 0))
@@ -67,8 +68,8 @@ def render(window, background, M, solution):
 			if M[x, y, 3] == 0:	
 				pygame.gfxdraw.line(background, xpos+xsiz-thick, ypos+thick, xpos+xsiz-thick, ypos+ysiz-thick, (0, 0, 0))
 
-
-			#pygame.gfxdraw.circle(self.background, xpos, ypos, 10, (0, 255, 0))	
+			if M[x, y, 4] == 1:
+				pygame.gfxdraw.circle(background, xpos + (xsiz/2), ypos + (ysiz/2), 1, (0, 255, 0))	
 
 	last = (xsiz/2, ysiz/2)
 	for node in solution:
@@ -145,6 +146,7 @@ def gen_maze():
 def solve(maze, solution):
 	global run	
 	#global count 
+	global max	
 	#count += 1
 		
 	#if count > 1000:
@@ -206,15 +208,26 @@ def solve(maze, solution):
 		if not found:
 			solution.pop()
 			#print("back")
-	
+
+	if len(solution) > max:
+		max = len(solution)
 
 	current = solution[len(solution)-1]
 	if current[0] == num_cols-1 and current[1] == num_rows-1:
 		print("done")
+		print(str(len(solution)) + " moves.")
+		print("max: " + str(max))
 		run = 0
-		time.sleep(20)
+		time.sleep(10)
 
 	return maze, solution
+
+def read_keyb():
+	global run
+	for event in pygame.event.get():
+		if event.type == KEYDOWN:
+			if event.key == K_ESCAPE:
+				run = False
 
 def main():
 	solution = []
@@ -222,6 +235,7 @@ def main():
 	maze = gen_maze()
 
 	while run:
+		read_keyb()
 		maze, solution = solve(maze, solution)
 		render(window, background, maze, solution)
 		#print("tick")
