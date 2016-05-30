@@ -6,8 +6,6 @@ from pygame.locals import *
 import time
 import random
 import numpy as np
-#from matplotlib import pyplot as plt
-#import matplotlib.cm as cm
 import sys
 
 scrw = 800
@@ -18,7 +16,6 @@ num_cols = 100
 
 thick = 0
 run = True
-#count = 0
 max = 0
 
 def init():
@@ -29,8 +26,6 @@ def init():
 		background = pygame.Surface(window.get_size())
 		background.fill((0, 255, 0))
 	
-		#print(pygame.display.Info())
-
 		window.blit(background, (0, 0))
 		pygame.display.flip()
 
@@ -38,8 +33,6 @@ def init():
 	
 def render(window, background, M, solution):
 	background.fill((255, 255, 255))
-
-	#pygame.gfxdraw.line(self.background, 0, 0, scrw, scrh, (0, 0, 0))
 
 	xsiz = scrw / num_cols
 	ysiz = scrh / num_rows
@@ -49,31 +42,31 @@ def render(window, background, M, solution):
 			xpos = x * xsiz
 			ypos = y * ysiz
 				
-			#pygame.gfxdraw.line(self.background, xpos, ypos, xpos+xsiz, ypos+ysiz, (255, 0, 0))
-			#pygame.gfxdraw.line(self.background, xpos+xsiz, ypos, xpos, ypos+ysiz, (255, 0, 0))
-			
 			# U	
 			if M[x, y, 0] == 0:
-				pygame.gfxdraw.line(background, xpos+thick, ypos+thick, xpos+xsiz-thick, ypos+thick, (0, 0, 0))
+				pygame.gfxdraw.line(background, xpos+thick, ypos+thick, \
+					xpos+xsiz-thick, ypos+thick, (0, 0, 0))
 			
 			# L
 			if M[x, y, 1] == 0:	
-				pygame.gfxdraw.line(background, xpos+thick, ypos+thick, xpos+thick, ypos+ysiz-thick, (0, 0, 0))
+				pygame.gfxdraw.line(background, xpos+thick, ypos+thick, \
+					xpos+thick, ypos+ysiz-thick, (0, 0, 0))
 			
 			# D
 			if M[x, y, 2] == 0:	
-				pygame.gfxdraw.line(background, xpos+thick, ypos+ysiz-thick, xpos+xsiz-thick, ypos+ysiz-thick, (0, 0, 0))
+				pygame.gfxdraw.line(background, xpos+thick, ypos+ysiz-thick, \
+					xpos+xsiz-thick, ypos+ysiz-thick, (0, 0, 0))
 				
 			# R
 			if M[x, y, 3] == 0:	
-				pygame.gfxdraw.line(background, xpos+xsiz-thick, ypos+thick, xpos+xsiz-thick, ypos+ysiz-thick, (0, 0, 0))
+				pygame.gfxdraw.line(background, xpos+xsiz-thick, ypos+thick, \
+					xpos+xsiz-thick, ypos+ysiz-thick, (0, 0, 0))
 
 			if M[x, y, 4] == 1:
 				pygame.gfxdraw.circle(background, xpos + (xsiz/2), ypos + (ysiz/2), 1, (0, 255, 0))	
 
 	last = (xsiz/2, ysiz/2)
 	for node in solution:
-		#print(node)
 		xpos = ((node[0] + 1) * xsiz) - (xsiz/2)
 		ypos = ((node[1] + 1) * ysiz) - (ysiz/2)
 		pygame.gfxdraw.line(background, last[0], last[1], xpos, ypos, (255, 0, 0))
@@ -145,41 +138,20 @@ def gen_maze():
 
 def solve(maze, solution):
 	global run	
-	#global count 
 	global max	
-	#count += 1
 		
-	#if count > 1000:
-	#	time.sleep(5) 
-	#	run = 0	
-
 	if len(solution) == 0:
 		solution.append((0,0))
 	else:
 		found = False
 		node = solution[len(solution)-1]
 
-		#print("--")
-		#print("possible moves:")
-		#if maze[node[0], node[1], 0] == 1:
-		#	print("up")
-		#if maze[node[0], node[1], 1] == 1:
-		#	print("left")
-		#if maze[node[0], node[1], 2] == 1:
-		#	print("down")
-		#if maze[node[0], node[1], 3] == 1:
-		#	print("right")
-		#print("--")
-		#time.sleep(2)
-		#sys.exit(0)
-		
 		if (maze[node[0], node[1], 0] == 1) and (node[1] > 0) and not found:
 			# up - 0
 			if maze[node[0], node[1]-1, 4] == 0:
 				solution.append((node[0], node[1]-1))
 				maze[node[0], node[1]-1, 4] = 1;
 				found = True
-				#print("up")
 
 		if (maze[node[0], node[1], 1] == 1) and (node[0] > 0) and not found:
 			# left - 1
@@ -187,7 +159,6 @@ def solve(maze, solution):
 				solution.append((node[0]-1, node[1]))
 				maze[node[0]-1, node[1], 4] = 1;
 				found = True
-				#print("left")
 
 		if (maze[node[0], node[1], 2] == 1) and (node[1] * (scrh/num_rows) < scrh) and not found:
 			# down - 2
@@ -195,7 +166,6 @@ def solve(maze, solution):
 				solution.append((node[0], node[1]+1))
 				maze[node[0], node[1]+1, 4] = 1
 				found = True
-				#print("down")
 
 		if (maze[node[0], node[1], 3] == 1) and (node[0] * (scrw/num_cols) < scrw) and not found:
 			# right - 3
@@ -203,11 +173,9 @@ def solve(maze, solution):
 				solution.append((node[0]+1, node[1]))
 				maze[node[0]+1, node[1], 4] = 1
 				found = True
-				#print("right")
 
 		if not found:
 			solution.pop()
-			#print("back")
 
 	if len(solution) > max:
 		max = len(solution)
@@ -238,8 +206,6 @@ def main():
 		read_keyb()
 		maze, solution = solve(maze, solution)
 		render(window, background, maze, solution)
-		#print("tick")
-		#time.sleep(1)
 
 if __name__ == "__main__":
 	main()
