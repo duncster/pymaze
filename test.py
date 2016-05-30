@@ -186,7 +186,6 @@ def solve(maze, solution):
 		print(str(len(solution)) + " moves.")
 		print("max: " + str(max))
 		run = 0
-		time.sleep(10)
 
 	return maze, solution
 
@@ -202,10 +201,13 @@ def main():
 	window, background = init()
 	maze = gen_maze()
 
+	render(window, background, maze, solution)
 	while run:
 		read_keyb()
 		maze, solution = solve(maze, solution)
-		render(window, background, maze, solution)
+
+	render(window, background, maze, solution)
+	time.sleep(5)
 
 if __name__ == "__main__":
 	main()
