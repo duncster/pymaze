@@ -25,16 +25,20 @@ def init():
 		window = pygame.display.set_mode((scrw, scrh), pygame.FULLSCREEN|pygame.DOUBLEBUF|pygame.HWSURFACE)
 		#window = pygame.display.set_mode((scrw, scrh), pygame.DOUBLEBUF)
 		pygame.display.set_caption('Maze')
-		background = pygame.Surface(window.get_size())
-		background.fill((0, 255, 0))
-	
-		window.blit(background, (0, 0))
+		maze_srf = pygame.Surface(window.get_size())
+		maze_srf.fill((0, 255, 0))
+
+		path_srf = pygame.Surface(window.get_size())
+		path_srf.set_colorkey((0, 0, 255))
+		path_srf.fill((0, 0, 255))
+
+		window.blit(maze_srf, (0, 0))
 		pygame.display.flip()
 
-		return window, background
+		return window, maze_srf, path_srf
 	
-def render(window, background, M, solution):
-	background.fill((255, 255, 255))
+def render_maze(window, maze_srf, maze):
+	maze_srf.fill((255, 255, 255))
 
 	xsiz = scrw / num_cols
 	ysiz = scrh / num_rows
@@ -45,39 +49,47 @@ def render(window, background, M, solution):
 			ypos = y * ysiz
 				
 			# U	
-			if M[x, y, 0] == 0:
-				pygame.gfxdraw.line(background, xpos+thick, ypos+thick, \
+			if maze[x, y, 0] == 0:
+				pygame.gfxdraw.line(maze_srf, xpos+thick, ypos+thick, \
 					xpos+xsiz-thick, ypos+thick, (0, 0, 0))
 			
 			# L
-			if M[x, y, 1] == 0:	
-				pygame.gfxdraw.line(background, xpos+thick, ypos+thick, \
+			if maze[x, y, 1] == 0:	
+				pygame.gfxdraw.line(maze_srf, xpos+thick, ypos+thick, \
 					xpos+thick, ypos+ysiz-thick, (0, 0, 0))
 			
 			# D
-			if M[x, y, 2] == 0:	
-				pygame.gfxdraw.line(background, xpos+thick, ypos+ysiz-thick, \
+			if maze[x, y, 2] == 0:	
+				pygame.gfxdraw.line(maze_srf, xpos+thick, ypos+ysiz-thick, \
 					xpos+xsiz-thick, ypos+ysiz-thick, (0, 0, 0))
 				
 			# R
-			if M[x, y, 3] == 0:	
-				pygame.gfxdraw.line(background, xpos+xsiz-thick, ypos+thick, \
+			if maze[x, y, 3] == 0:	
+				pygame.gfxdraw.line(maze_srf, xpos+xsiz-thick, ypos+thick, \
 					xpos+xsiz-thick, ypos+ysiz-thick, (0, 0, 0))
 
 			if show_visits:
-				if M[x, y, 4] == 1:
-					pygame.gfxdraw.circle(background, xpos + (xsiz/2), ypos + (ysiz/2), 1, (0, 255, 0))	
+				if maze[x, y, 4] == 1:
+					pygame.gfxdraw.circle(maze_srf, xpos + (xsiz/2), ypos + (ysiz/2), 1, (0, 255, 0))	
 
+	window.blit(maze_srf, (0, 0))
+	pygame.display.flip()
+
+def render_path(window, path_srf, solution):
+	xsiz = scrw / num_cols
+	ysiz = scrh / num_rows
+	
 	last = (xsiz/2, ysiz/2)
+	
 	for node in solution:
 		xpos = ((node[0] + 1) * xsiz) - (xsiz/2)
 		ypos = ((node[1] + 1) * ysiz) - (ysiz/2)
-		pygame.gfxdraw.line(background, last[0], last[1], xpos, ypos, (255, 0, 0))
+		pygame.gfxdraw.line(path_srf, last[0], last[1], xpos, ypos, (255, 0, 0))
 	
+		window.blit(path_srf, (last[0], last[1]), (last[0], last[1],  xpos, ypos))
+		pygame.display.update()
+		
 		last = (xpos, ypos)
-
-	window.blit(background, (0, 0))
-	pygame.display.flip()
 
 def gen_maze():
 	M = np.zeros((num_rows,num_cols,5), dtype=np.uint8)
@@ -201,16 +213,21 @@ def read_keyb():
 
 def main():
 	solution = []
-	window, background = init()
+	window, maze_srf, path_srf = init()
 	maze = gen_maze()
 
-	render(window, background, maze, solution)
+	pygame.mouse.set_visible(False)
+
+	render_maze(window, maze_srf, maze)
+	
 	while run:
 		read_keyb()
 		maze, solution = solve(maze, solution)
 
-	render(window, background, maze, solution)
+	render_path(window, path_srf, solution)
 	time.sleep(5)
+
+	pygame.mouse.set_visible(True)
 
 if __name__ == "__main__":
 	main()
