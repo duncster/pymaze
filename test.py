@@ -229,6 +229,9 @@ def main():
 
 	pygame.mouse.set_visible(True)
 
+import cProfile as profile
+
 if __name__ == "__main__":
-	main()
+	profile.run('main()')
+	#main()
 	
