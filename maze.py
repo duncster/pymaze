@@ -77,6 +77,7 @@ def render_maze(window, maze_srf, maze):
 	pygame.display.flip()
 
 def render_path(window, path_srf, solution):
+	clock = pygame.time.Clock()
 	xsiz = scrw / num_cols
 	ysiz = scrh / num_rows
 	
@@ -88,7 +89,8 @@ def render_path(window, path_srf, solution):
 		pygame.gfxdraw.line(path_srf, last[0], last[1], xpos, ypos, (255, 0, 0))
 	
 		window.blit(path_srf, (last[0], last[1]), (last[0], last[1],  xpos, ypos))
-		pygame.display.update()
+		clock.tick(100)
+		pygame.display.flip()
 		
 		last = (xpos, ypos)
 
