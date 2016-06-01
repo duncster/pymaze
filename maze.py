@@ -12,8 +12,8 @@ import sys
 scrw = 800
 scrh = 600
 
-num_rows = 200
-num_cols = 200
+num_rows = 100
+num_cols = 100
 
 thick = 0
 run = True
@@ -88,7 +88,8 @@ def render_path(window, path_srf, solution):
 		ypos = ((node[1] + 1) * ysiz) - (ysiz/2)
 		pygame.gfxdraw.line(path_srf, last[0], last[1], xpos, ypos, (255, 0, 0))
 	
-		window.blit(path_srf, (last[0], last[1]), (last[0], last[1],  xpos, ypos))
+		#window.blit(path_srf, (last[0], last[1]), (last[0], last[1],  xpos, ypos))
+		window.blit(path_srf, (0, 0))
 		clock.tick(100)
 		pygame.display.flip()
 		
