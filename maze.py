@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-#
 
 import pygame
 import pygame.gfxdraw
@@ -12,8 +11,8 @@ import sys
 scrw = 800
 scrh = 600
 
-num_rows = 100
-num_cols = 100
+num_rows = 50
+num_cols = 50
 
 thick = 0
 run = True
@@ -77,13 +76,15 @@ def render_maze(window, maze_srf, maze):
 	pygame.display.flip()
 
 def render_path(window, path_srf, solution):
+	global run
 	clock = pygame.time.Clock()
 	xsiz = scrw / num_cols
 	ysiz = scrh / num_rows
-	
 	last = (xsiz/2, ysiz/2)
-	
+	run = True
+
 	for node in solution:
+		read_keyb()
 		xpos = ((node[0] + 1) * xsiz) - (xsiz/2)
 		ypos = ((node[1] + 1) * ysiz) - (ysiz/2)
 		pygame.gfxdraw.line(path_srf, last[0], last[1], xpos, ypos, (255, 0, 0))
@@ -92,8 +93,11 @@ def render_path(window, path_srf, solution):
 		window.blit(path_srf, (0, 0))
 		clock.tick(100)
 		pygame.display.flip()
-		
+			
 		last = (xpos, ypos)
+		
+		if not run:
+			return
 
 def gen_maze():
 	M = np.zeros((num_rows,num_cols,5), dtype=np.uint8)
@@ -233,9 +237,9 @@ def main():
 
 	pygame.mouse.set_visible(True)
 
-import cProfile as profile
+#import cProfile as profile
 
 if __name__ == "__main__":
-	profile.run('main()')
-	#main()
+	#profile.run('main()')
+	main()
 	
