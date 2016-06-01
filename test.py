@@ -11,8 +11,8 @@ import sys
 scrw = 800
 scrh = 600
 
-num_rows = 100
-num_cols = 100
+num_rows = 20
+num_cols = 20
 
 thick = 0
 run = True
